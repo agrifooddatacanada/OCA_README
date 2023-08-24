@@ -14,8 +14,9 @@ OCA_READ_ME/1.0
 
 Reference for Overlays Capture Architecture (OCA): 
 https://doi.org/10.5281/zenodo.7707467
+
 Reference for OCA_READ_ME/1.0:
-<when available>
+https://github.com/agrifooddatacanada/OCA_README
 
 In OCA, a schema consists of a capture_base which documents the attributes and their most basic features.
 A schema may also contain overlays which add details to the capture_base.
@@ -25,6 +26,7 @@ This READ ME format documents the capture_base and overlays that were associated
 OCA_MANIFEST lists all components of the OCA Bundle.
 For the OCA_BUNDLE, each section between rows of ****'s contains the details of one "layer type/version" of the OCA Bundle.\n\n`;
 
+// read the OCA bundle from a local directory
 async function ArrayOcaOverays(path) {
   try {
     const data = await fs.readFile(path);
@@ -51,24 +53,24 @@ async function ArrayOcaOverays(path) {
 }
 
 async function toTextFile(jsonFilesArray) {
-
   // declare the variables
   const textFile = [];
   const variablesArray = [];
-  let Manifest = [];
-  let Layer_name = null;
+  let manifest = [];
+  let layer_name = null;
   let SAID = null;
 
   for (const jsonFile of jsonFilesArray) {
-    const other_variables = {}; // Object to store variables other than "Layer_name" and "SAID" for each overlay
+    const other_variables = {}; // Object to store variables other than "layer_name" and "SAID" for each overlay
     let hasFilesProperty = false; // Flag to check if "files" property is present
     const json = JSON.parse(jsonFile);
   
     if (json.hasOwnProperty("files")) {
       const files = json.files;
+      // creating the capture_base key-value pair
       const capture_base_key_value_pair = { capture_base: Object.keys(files) };
       const files_values = [capture_base_key_value_pair, ...Object.values(files)];
-      Manifest.push(files_values);
+      manifest.push(files_values);
       hasFilesProperty = true;
     }
   
@@ -81,7 +83,7 @@ async function toTextFile(jsonFilesArray) {
   
       if (key === "type") {
         const split_type = value.split("/");
-        Layer_name = split_type.slice(-2).join("/");
+        layer_name = split_type.slice(-2).join("/");
       } else if (key === "digest") {
         SAID = value;
       } else if (key !== "capture_base" && value != null) {
@@ -92,7 +94,7 @@ async function toTextFile(jsonFilesArray) {
     }
   
     const variables = {
-      Layer_name: Layer_name,
+      layer_name: layer_name,
       SAID: SAID,
       ...other_variables,
     };
@@ -103,23 +105,23 @@ async function toTextFile(jsonFilesArray) {
   textFile.push(
     readmeText,
     "BEGIN_OCA_MANIFEST\n",
-    "************************************************************\n",
-    "Bundle SAID: XXXXXXXXXX\n\n"
+    "******************************************************************\n",
+    // "Bundle SAID: XXXXXXXXXX\n\n"
   );
 
   // the OCA manifest (all the overlay hashes (SAIDs))
-  const manifest_string = JSON.stringify(Manifest,null,0);
+  const manifest_string = JSON.stringify(manifest,null,0);
   const cleaned_manifest = manifest_string.replace(/[\[\]{}]/g, '').replace(/\n/g, '').replace(/,/g, ',\n').replace(/:/g, ' SAID: ');
   textFile.push(
     cleaned_manifest,
     "\n",
-    "************************************************************\n",
+    "******************************************************************\n",
     "END_OCA_MANIFEST\n\n",
     "BEGIN_OCA_BUNDLE\n",
-    "************************************************************"
+    "******************************************************************"
   );
 
-  // for each overlay individually, counting all possible cases that need Regex handling
+  // for each overlay individually, counting all possible cases that need regex handling
   variablesArray.forEach((variable) => {
 
     // renaming the overlay variables to match the OCA_README format
@@ -150,7 +152,7 @@ async function toTextFile(jsonFilesArray) {
       }
     }
 
-    // Handle the special case when the key is "attributes" {for capture_base}
+    // handling the special case when the key is "attributes" {for capture_base}
     const attributesValue = variable["attributes"];
     if (attributesValue === undefined || attributesValue === null || attributesValue === '') {
       delete variable["attributes"];
@@ -163,33 +165,31 @@ async function toTextFile(jsonFilesArray) {
     const text = JSON.stringify(variable, null, 3);
     const cleaned_text = text.replace(/^ {3}/mg, '').replace(/[{}"]/g, '');
 
-    // Remove commas only for strings not enclosed in square brackets
+    // remove commas only for strings not enclosed in square brackets
     const result = cleaned_text.replace(/(\[[^\]]*\]|[^[\],]+),?/g, (match, group) => {
       if (match.includes('[') && match.includes(']')) {
-        // If enclosed in square brackets, keep it on the same line and remove inner whitespaces
+        // if enclosed in square brackets, keep it on the same line and remove inner whitespaces
         return group.replace(/\n/g, '').replace(/\s+/g, '');
       } else {
         return group.replace(/,/g, ''); // Otherwise, remove the commas
       }
     });
-    
-    // adding overaly name to the textFile 
-    const text_with_schema_attributes = result.replace(/Schema attribute:/g, '\nSchema attribute: ' + variable.Layer_name);
-    // const text_with_schema_attributes = result.replace(/Schema attribute:/g, ' Schema attribute: ' + variable.Layer_name);
 
-    const text_with_schema_layer_name = text_with_schema_attributes.replace(/Layer_name:/g, 'Layer name:');
+    // adding overaly name to the textFile 
+    const text_with_schema_attributes = result.replace(/Schema attribute:/g, '\nSchema attribute: ' + variable.layer_name);
+    const text_with_schema_layer_name = text_with_schema_attributes.replace(/layer_name:/g, 'Layer name:');
   
     if (!textFile.includes(text_with_schema_layer_name)) {
       textFile.push(
         text_with_schema_layer_name);
-      textFile.push("************************************************************");
+      textFile.push("******************************************************************");
     }
   });
   
   textFile.push("\nEND_OCA_BUNDLE")
   const text = textFile.join('');
 
-  const filename = 'Text_ReadMe.txt';
+  const filename = 'README_OCA_schema.txt';
   await fs.writeFile(filename, text);
 }
 
