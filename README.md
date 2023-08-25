@@ -14,7 +14,7 @@ We have created a plain text file representation of all the information in a OCA
 
 > OCA Schema Bundle (.zip) and OCA README complement each other. One is for machines. One is for humans.
 
-When you create a schema you should download and use both the machine-readable OCA Schema Bundle (the .zip file) and the human-readable OCA README (the .txt file). Store these files together with your data. When you share your data share both of these files to help users understand the context of your data. If your schema is general enough for others to use you can both schema files in a repository and cite this repository entry.
+When you create a schema you should download and use both the machine-readable OCA Schema Bundle (the .zip file) and the human-readable OCA README (the .txt file). Store these files together with your data. When you share your data share both of these files to help users understand the context of your data. If your schema is general enough for others to use you can both schema files in a repository and cite this repository entry. [Learn more about how to save and use your OCA schema files](https://agrifooddatacanada.github.io/OCA_training_pathway/deposit_schema.html).
 
 # How OCA README is generated
 
