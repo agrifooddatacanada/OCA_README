@@ -49,7 +49,6 @@ async function ArrayOcaOverays(path) {
 }
 
 async function toTextFile(jsonFilesArray) {
-  console.log('jsonFilesArray', jsonFilesArray);
   // declare the variables
   const textFile = [];
   const variablesArray = [];
