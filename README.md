@@ -5,10 +5,10 @@ A schema describes the structure of your data and can contain helpful informatio
 
 The Overlays Capture Architecture (OCA) is a way to represent a schema. The advantage of OCA schemas is that they are modular and arranged in a series of overlays that reference a capture base using Self Addressing Identifiers ([SAIDs](https://agrifooddatacanada.github.io/OCA_training_pathway/identifiers_and_saids.html)). You can start with a very simple design, and because of the OCA layered architecture you can add more functionality to the schema later.
 
-# OCA README for humans to read
+# OCA README for humans to read and to archive
 Overlays Capture Architecture (OCA) is a machine-readable way to encode a schema expressed in the JSON scripting language. While JSON files are text files, they are not built to be easy for people to understand.
 
-We have created a plain text file representation of all the information in a OCA Schema Bundle (the .zip file containing all the JSON files that make up the schema). The OCA README file can be opened with plain text viewers such as Notepad in Microsoft Windows. The OCA README file starts with some citations of the OCA standard and then lists all the overlays present in the bundle in the manifest. After the manifest there is a list of the contents of each overlay. The OCA README contains all the information that is present in the source OCA Schema Bundle.
+We have created a plain text file representation of all the information in a OCA Schema Bundle (the .zip file containing all the JSON files that make up the schema). The OCA README file can be opened with plain text viewers such as Notepad in Microsoft Windows. Because of it's simplicity, the OCA README file is very suitable for schema archiving purposes. The OCA README file starts with some citations of the OCA standard and then lists all the overlays present in the bundle in the manifest. After the manifest there is a list of the contents of each overlay. The OCA README contains all the information that is present in the source OCA Schema Bundle.
 
 # How to use OCA README
 
