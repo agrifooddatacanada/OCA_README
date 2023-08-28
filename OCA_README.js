@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const JSZip = require('jszip');
 
-// path to the OCA bundle for examples
+// path to the OCA bundle for examples : use the example from the example_schemas_bundle folder
 // const path = `${directory}/9f103493cbe64733919f00d3768e6ba5.zip`
 
 const readmeText = `
@@ -57,10 +57,11 @@ async function toTextFile(jsonFilesArray) {
   let SAID = null;
 
   for (const jsonFile of jsonFilesArray) {
-    const other_variables = {}; // Object to store variables other than "layer_name" and "SAID" for each overlay
-    let hasFilesProperty = false; // Flag to check if "files" property is present
+    const other_variables = {}; // Object to store overlay attributes other than "layer_name" and "SAID" for each overlay
+    let hasFilesProperty = false; // Flag to check if "files" property is present for the "OCA_MANIFEST"
     const json = JSON.parse(jsonFile);
-  
+    
+    // the manifest is held here
     if (json.hasOwnProperty("files")) {
       const files = json.files;
       // creating the capture_base key-value pair
@@ -69,11 +70,11 @@ async function toTextFile(jsonFilesArray) {
       manifest.push(files_values);
       hasFilesProperty = true;
     }
-  
+
     if (hasFilesProperty) {
       continue;
     }
-  
+
     for (const key in json) {
       const value = json[key];
   
@@ -82,20 +83,30 @@ async function toTextFile(jsonFilesArray) {
         layer_name = split_type.slice(-2).join("/");
       } else if (key === "digest") {
         SAID = value;
-      } else if (key !== "capture_base" && value != null) {
+      } 
+      else if (key !== "capture_base" && value != null) {
         if (Object.keys(value).length !== 0 || (Array.isArray(value) && value.length !== 0)) {
           other_variables[key] = value;
         }
       }
     }
-  
+
     const variables = {
       layer_name: layer_name,
       SAID: SAID,
       ...other_variables,
     };
     variablesArray.push(variables);
+    // shift the capture base to the top of the array always
+    for (let i = 0; i < variablesArray.length; i++) {
+      if (variablesArray[i].hasOwnProperty("classification")) {
+        const classifiedVariable = variablesArray.splice(i, 1)[0];
+        variablesArray.unshift(classifiedVariable);
+        break;
+      }
+    }
   }
+
   // turning OCA bundle into OCA readme begins here
   textFile.push(
     readmeText,
@@ -107,6 +118,7 @@ async function toTextFile(jsonFilesArray) {
   // the OCA manifest (all the overlay hashes (SAIDs))
   const manifest_string = JSON.stringify(manifest,null,0);
   const cleaned_manifest = manifest_string.replace(/[\[\]{}]/g, '').replace(/\n/g, '').replace(/,/g, ',\n').replace(/:/g, ' SAID: ');
+
   textFile.push(
     cleaned_manifest,
     "\n",
@@ -116,7 +128,7 @@ async function toTextFile(jsonFilesArray) {
     "******************************************************************"
   );
 
-  // for each overlay individually, counting all possible cases that need regex handling
+  // for each overlay individually, address all possible cases that need regex handling
   variablesArray.forEach((variable) => {
 
     // renaming the overlay variables to match the OCA_README format
@@ -159,14 +171,11 @@ async function toTextFile(jsonFilesArray) {
     // handling indentation 
     const text = JSON.stringify(variable, null, 3);
     const cleaned_text = text.replace(/^ {3}/mg, '').replace(/[{}"]/g, '');
-
-    // remove commas only for strings not enclosed in square brackets
     const result = cleaned_text.replace(/(\[[^\]]*\]|[^[\],]+),?/g, (match, group) => {
       if (match.includes('[') && match.includes(']')) {
-        // if enclosed in square brackets, keep it on the same line and remove inner whitespaces
         return group.replace(/\n/g, '').replace(/\s+/g, '');
       } else {
-        return group.replace(/,/g, ''); // Otherwise, remove the commas
+        return group.replace(/,/g, '');
       }
     });
 
