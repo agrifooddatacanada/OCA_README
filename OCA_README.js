@@ -2,12 +2,11 @@ const fs = require('fs').promises;
 const JSZip = require('jszip');
 
 // path to the OCA bundle for examples : use the example from the example_schemas_bundle folder
-// const path = `${directory}/9f103493cbe64733919f00d3768e6ba5.zip`
+// const path = `${directory}/572eb71004e56e27e934b71a1cf400bc.zip`
 
 const readmeText = `
 BEGIN_REFERENCE_MATERIAL
 ******************************************************************
-
 OCA_READ_ME/1.0
 This is a human-readable schema, based on the OCA schema standard.
 
@@ -118,7 +117,7 @@ async function toTextFile(jsonFilesArray) {
     readmeText,
     "BEGIN_OCA_MANIFEST\n",
     "******************************************************************\n",
-    // "Bundle SAID: XXXXXXXXXX\n\n"
+    "Bundle SAID: unavailable\n\n"
   );
 
   // the OCA manifest (all the overlay hashes (SAIDs))
