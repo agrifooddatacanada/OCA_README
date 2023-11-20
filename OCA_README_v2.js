@@ -1,4 +1,3 @@
-const { writeFile } = require('fs');
 const fs = require('fs').promises;
 require('dotenv').config();
 
@@ -8,7 +7,7 @@ BEGIN_REFERENCE_MATERIAL
 OCA_READ_ME/1.0
 This is a human-readable schema, based on the OCA schema standard.
 
-Reference for Overlays Capture Architecture (OCA): 
+Reference for Overlays Capture Architecture (OCA):
 https://doi.org/10.5281/zenodo.7707467
 
 Reference for OCA_READ_ME/1.0:
@@ -42,7 +41,6 @@ async function JsontoText(json) {
     // Step 2: __init__ of OCA ReadMe file
     const text_file = [];
 
-
     const bundle_said = json_bundle.d;
     text_file.push(
         readmeText,
@@ -54,7 +52,7 @@ async function JsontoText(json) {
     const overlay_saids = {};
     const overlay_texts = {};
 
-    // Step 3: --- Constructing OCA ReadMe file
+    // Step 3: --- Converting schema overlays from objects to texts
     if (json_bundle.hasOwnProperty('capture_base')) {
         try {
             const said = json_bundle.capture_base.d;
@@ -70,10 +68,10 @@ async function JsontoText(json) {
             `${Object.entries(schema_attributes)
                 .map(([key, value]) => `    ${key}: ${value}`)
                 .join('\n')}\n` + `\n`;
-        
+
         // implement flagged attributes
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -94,7 +92,7 @@ async function JsontoText(json) {
             }
             overlay_texts['meta'] = metas_overlays_txt.join('');
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -117,8 +115,8 @@ async function JsontoText(json) {
             };
             overlay_texts['label'] = labels_overlays_txt.join('');
         } catch (err) {
-            console.log(err);
-        };    
+            throw err;
+        };
     };
 
     if (json_bundle.overlays.hasOwnProperty('information')) {
@@ -141,7 +139,7 @@ async function JsontoText(json) {
             overlay_texts['information'] = information_overlays_txt.join('');
 
         } catch (err) {
-            console.log(err);
+            throw err;
         };
 
     };
@@ -162,7 +160,7 @@ async function JsontoText(json) {
                 .map(([key, value]) => `    ${key}: ${value}`)
                 .join('\n')}\n` + `\n`;
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -181,10 +179,10 @@ async function JsontoText(json) {
                 .join('\n')}\n` + `\n`;
 
         } catch (err) {
-            console.log(err);
-        };      
-    };  
-         
+            throw err;
+        };
+    };
+
     if (json_bundle.overlays.hasOwnProperty('character_encoding')) {
         try {
             const said = json_bundle.overlays.character_encoding.d;
@@ -198,9 +196,9 @@ async function JsontoText(json) {
             `${Object.entries(schema_attributes)
                 .map(([key, value]) => `    ${key}: ${value}`)
                 .join('\n')}\n` + `\n`;
-            
+
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -217,9 +215,9 @@ async function JsontoText(json) {
             `${Object.entries(schema_attributes)
                 .map(([key, value]) => `    ${key}: ${value}`)
                 .join('\n')}\n` + `\n`;
-    
+
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -237,7 +235,7 @@ async function JsontoText(json) {
                 .map(([key, value]) => `    ${key}: [${value}]`)
                 .join('\n')}\n` + `\n`;
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -265,7 +263,7 @@ async function JsontoText(json) {
             overlay_texts['entry'] = entry_overlays_txt.join('');
 
         } catch (err) {
-            console.log(err);
+            throw err;
         };
     };
 
@@ -315,7 +313,7 @@ async function JsontoText(json) {
             };
         };
     } catch (err) {
-        console.log(err);
+        throw err;
     };
 
     text_file.push(...manifest);
@@ -381,27 +379,31 @@ async function JsontoText(json) {
         text_file.push(overlay_texts['entry']);
         text_file.push(
             "******************************************************************\n",
+
             );
     };
-    
+
+    text_file.push(
+        "END_OCA_BUNDLE\n",
+        );
+
     return text_file.join('');
 };
 
 // Step 5: --- testing
-/* const path = process.env.PATH_JSONS;
+const path = process.env.PATH_JSONS;
 const json_example = path + '/chicken_example.json';
 const test_readme = JsontoText(json_example);
 test_readme.then(data => {
     fs.writeFile('test_readme.txt', data, 'utf-8',
 
     console.log('.... OCA ReadME file has been created successfully ....'),
-    err => {  
+    err => {
         if (err) {
             console.error(err);
             return;
-        };    
+        };
     });
 }).catch(error => {
-    console.error(error);
+    throw error;
 });
-    */

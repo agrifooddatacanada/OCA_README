@@ -4,7 +4,7 @@ BEGIN_REFERENCE_MATERIAL
 OCA_READ_ME/1.0
 This is a human-readable schema, based on the OCA schema standard.
 
-Reference for Overlays Capture Architecture (OCA): 
+Reference for Overlays Capture Architecture (OCA):
 https://doi.org/10.5281/zenodo.7707467
 
 Reference for OCA_READ_ME/1.0:
@@ -174,3 +174,4 @@ Schema attributes: entry/1.0
     Breed: Brahma, Silkie
 
 ******************************************************************
+END_OCA_BUNDLE
