@@ -2,4 +2,4 @@ package-lock.json
 node_modules/
 .env
 example_schema_bundles/
-OCA_README_v1.js
+ARCHIVED_OCA_README.js
