@@ -1,5 +1,4 @@
-const fs = require('fs').promises;
-require('dotenv').config();
+import fs from 'fs/promises'
 
 const readmeText = `
 BEGIN_REFERENCE_MATERIAL
@@ -391,11 +390,9 @@ async function JsontoText(json) {
 };
 
 // Step 5: --- testing
-const path = process.env.PATH_JSONS;
-const json_example = path + '/chicken_example.json';
-const test_readme = JsontoText(json_example);
+const test_readme = JsontoText('./tests/chicken_example.json');
 test_readme.then(data => {
-    fs.writeFile('test_readme.txt', data, 'utf-8',
+    fs.writeFile('./tests/example_readme.txt', data, 'utf-8',
 
     console.log('.... OCA ReadME file has been created successfully ....'),
     err => {
